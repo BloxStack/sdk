@@ -19,6 +19,12 @@ const SharedBloxstack = createBloxStack({
 })
 
 /* In client & server */
-export const ServerBloxstack = createBloxStackServer(SharedBloxstack);
-export const ClientBloxstack = createBloxStackClient(SharedBloxstack);
+import { Server, Client } from "@bloxstack/sdk"
+
+export const ServerBloxstack = startBloxStack<Server>(SharedBloxstack, {
+  /* options */
+});
+export const ClientBloxstack = startBloxStack<Client>(SharedBloxstack, {
+  /* options */
+});
 ```
