@@ -21,10 +21,10 @@ const SharedBloxstack = createBloxStack({
 /* In client & server */
 import { Server, Client } from "@bloxstack/sdk"
 
-export const ServerBloxstack = startBloxStack<Server>(SharedBloxstack, {
+return startBloxStack<Server>(SharedBloxstack, {
   /* options */
 });
-export const ClientBloxstack = startBloxStack<Client>(SharedBloxstack, {
+export startBloxStack<Client>(SharedBloxstack, {
   /* options */
 });
 ```

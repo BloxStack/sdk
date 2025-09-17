@@ -1,5 +1,8 @@
-export type Server = Symbol;
-export type Client = Symbol;
+import { RunService } from "@rbxts/services";
+import { BloxStack, BloxStackAdapter } from "./types";
+
+export type Server = 0;
+export type Client = 1;
 
 interface BloxStackStartClientOptions {
 	clientOnlyOption: any;
@@ -12,4 +15,10 @@ type BloxStackStartOptions<T extends Server | Client> = T extends Server
 	? BloxStackStartServerOptions
 	: BloxStackStartClientOptions;
 
-export default function startBloxStack<T extends Server | Client>(options: BloxStackStartOptions<T>) {}
+export default function startBloxStack<
+	S extends Server | Client, // Explicit or inferred type for options
+	T extends BloxStack<BloxStackAdapter[]> = BloxStack<BloxStackAdapter[]>, // T inferred from bloxstack
+>(bloxstack: T, options: BloxStackStartOptions<S>): ReturnType<T>[S extends Server ? "server" : "client"] {
+	const isClient = RunService.IsClient();
+	return {};
+}
