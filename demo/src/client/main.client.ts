@@ -1,3 +1,3 @@
 import { ClientBloxstack } from "./bloxstack";
 
-ClientBloxstack.Audio.a();
+ClientBloxstack.Aud

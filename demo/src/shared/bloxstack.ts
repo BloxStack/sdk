@@ -12,5 +12,7 @@ export const SharedBloxstack = createBloxStack({
 		audioAdapter({
 			SoundEffects: soundEffects,
 		}),
-	],
+	] as const,
 });
+SharedBloxstack().client.Audo;
+SharedBloxstack().client.Audio;

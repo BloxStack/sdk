@@ -1,11 +1,11 @@
-import { BloxStackAdapter } from "../types";
+import { BloxStackAdapter, BloxStackScopeAdapter } from "../types";
 
-export class AudioAdapterClient {
+export class AudioAdapterClient extends BloxStackScopeAdapter {
 	public play(soundId: string) {
 		print(soundId);
 	}
 }
-export class AudioAdapterServer {
+export class AudioAdapterServer extends BloxStackScopeAdapter {
 	public play(player: Player, soundId: string) {
 		print(soundId);
 	}
@@ -17,10 +17,10 @@ export class AudioAdapterServer {
 export interface AudioAdapterConfig {
 	SoundEffects: Record<string, number>;
 }
-export function audioAdapter(config: AudioAdapterConfig): BloxStackAdapter {
+export function audioAdapter(config: AudioAdapterConfig): BloxStackAdapter<"Audio"> {
 	return {
-		name: "Audio",
-		client: () => {},
-		server: () => {},
+		name: "Audio" as const,
+		client: AudioAdapterClient,
+		server: AudioAdapterServer,
 	};
 }

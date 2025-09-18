@@ -1,10 +1,10 @@
-export interface BloxStackScopeAdapter {}
-export interface BloxStackAdapter {
-	/* this is a combination of both the client & server adapter used for packaging */
-	name: string;
+export class BloxStackScopeAdapter {}
+export interface BloxStackAdapter<Name extends string = string> {
+	name: Name;
 	client: BloxStackScopeAdapter;
 	server: BloxStackScopeAdapter;
 }
+
 export type BloxStack<Adapters extends BloxStackAdapters> = () => {
 	client: { [K in keyof Adapters]: Adapters[K]["client"] };
 	server: { [K in keyof Adapters]: Adapters[K]["server"] };

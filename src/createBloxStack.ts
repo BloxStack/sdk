@@ -1,33 +1,28 @@
-import { Object } from "@rbxts/luau-polyfill";
-import { BloxStack, BloxStackAdapter, BloxStackAdapters, BloxStackScopeAdapter, BloxStackScopeAdapters } from "./types";
-import { RunService } from "@rbxts/services";
-
-/* Input */
-interface BloxStackProperties {
-	debugMode?: boolean;
-	adapters: BloxStackAdapter[];
-}
+import { BloxStack, BloxStackAdapter, BloxStackScopeAdapter, BloxStackScopeAdapters } from "./types";
 
 /**
  * Entry point function which returns a new BloxStack
  * @param props
  */
-type ArrayToRecord<T extends readonly { name: string }[], K extends string = T[number]["name"]> = {
-	[P in K]: Extract<T[number], { name: P }>;
+type ArrayToRecord<T extends readonly BloxStackAdapter[]> = {
+	[P in T[number]["name"]]: Extract<T[number], { name: P }>;
 };
 
-export function createBloxStack<T extends BloxStackProperties>(props: T): BloxStack<ArrayToRecord<T["adapters"]>> {
-	const clientAdapters: BloxStackScopeAdapters = {};
-	const serverAdapters: BloxStackScopeAdapters = {};
+export function createBloxStack<const T extends readonly BloxStackAdapter[]>(props: {
+	adapters: T;
+	debugMode?: boolean;
+}): BloxStack<ArrayToRecord<T>> {
+	const clientAdapters = {} as { [K in T[number]["name"]]: BloxStackScopeAdapter };
+	const serverAdapters = {} as { [K in T[number]["name"]]: BloxStackScopeAdapter };
 
-	for (const adapter of props.adapters ?? []) {
-		const { client, server, name } = adapter;
-		clientAdapters[name] = client;
-		serverAdapters[name] = server;
+	for (const adapter of props.adapters) {
+		const name = adapter.name as keyof typeof clientAdapters;
+		clientAdapters[name] = adapter.client;
+		serverAdapters[name] = adapter.server;
 	}
 
 	return () => ({
-		client: clientAdapters as any,
-		server: serverAdapters as any,
+		client: clientAdapters,
+		server: serverAdapters,
 	});
 }
