@@ -1,5 +1,5 @@
 import { Object } from "@rbxts/luau-polyfill";
-import { BloxStack, BloxStackAdapter, BloxStackScopeAdapter } from "./types";
+import { BloxStack, BloxStackAdapter, BloxStackAdapters, BloxStackScopeAdapter, BloxStackScopeAdapters } from "./types";
 import { RunService } from "@rbxts/services";
 
 /* Input */
@@ -12,18 +12,22 @@ interface BloxStackProperties {
  * Entry point function which returns a new BloxStack
  * @param props
  */
-export function createBloxStack<T extends BloxStackProperties>(props: T): BloxStack<T["adapters"]> {
-	const clientAdapters: BloxStackScopeAdapter[] = [];
-	const serverAdapters: BloxStackScopeAdapter[] = [];
+type ArrayToRecord<T extends readonly { name: string }[], K extends string = T[number]["name"]> = {
+	[P in K]: Extract<T[number], { name: P }>;
+};
+
+export function createBloxStack<T extends BloxStackProperties>(props: T): BloxStack<ArrayToRecord<T["adapters"]>> {
+	const clientAdapters: BloxStackScopeAdapters = {};
+	const serverAdapters: BloxStackScopeAdapters = {};
 
 	for (const adapter of props.adapters ?? []) {
-		const { client, server } = adapter;
-		clientAdapters.push(client);
-		serverAdapters.push(server);
+		const { client, server, name } = adapter;
+		clientAdapters[name] = client;
+		serverAdapters[name] = server;
 	}
 
-	return () => {
-		const IS_CLIENT = RunService.IsClient();
-		return IS_CLIENT ? clientAdapters : serverAdapters;
-	};
+	return () => ({
+		client: clientAdapters as any,
+		server: serverAdapters as any,
+	});
 }

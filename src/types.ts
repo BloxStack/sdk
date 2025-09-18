@@ -5,7 +5,9 @@ export interface BloxStackAdapter {
 	client: BloxStackScopeAdapter;
 	server: BloxStackScopeAdapter;
 }
-export type BloxStack<Adapters extends BloxStackAdapter[]> = () => {
+export type BloxStack<Adapters extends BloxStackAdapters> = () => {
 	client: { [K in keyof Adapters]: Adapters[K]["client"] };
 	server: { [K in keyof Adapters]: Adapters[K]["server"] };
 };
+export type BloxStackAdapters = Record<string, BloxStackAdapter>;
+export type BloxStackScopeAdapters = Record<string, BloxStackScopeAdapter>;

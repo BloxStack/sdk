@@ -1,15 +1,15 @@
 import { BloxStackAdapter } from "../types";
 
-export namespace AudioAdapterClient {
-	export function play(soundId: string) {
+export class AudioAdapterClient {
+	public play(soundId: string) {
 		print(soundId);
 	}
 }
-export namespace AudioAdapterServer {
-	export function play(player: Player, soundId: string) {
+export class AudioAdapterServer {
+	public play(player: Player, soundId: string) {
 		print(soundId);
 	}
-	export function playAll(soundId: string) {
+	public playAll(soundId: string) {
 		print(soundId);
 	}
 }
