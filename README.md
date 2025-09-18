@@ -9,22 +9,17 @@ import { centurionAdapter } from "@bloxstack/flamework"
 
 /** In shared */
 const SharedBloxstack = createBloxStack({
-  datastore: profileServiceAdapter({}),
-  networking: flameworkNetworkingAdapter({}),
-
-  /* this could include misc or custom items, which do not have special bloxstack functionality */
-  other: [
+  adapters: [
+    profileServiceAdapter({}), // will only be accessible via server, not any client functions.
     centurionAdapter({}) // centurion often needs to be init on both client & server. so this is a perfect example
   ]
 })
 
 /* In client & server */
-import { Server, Client } from "@bloxstack/sdk"
-
-return startBloxStack<Server>(SharedBloxstack, {
+return startBloxStackServer(SharedBloxstack, {
   /* options */
 });
-export startBloxStack<Client>(SharedBloxstack, {
+export startBloxStackClient(SharedBloxstack, {
   /* options */
 });
 ```

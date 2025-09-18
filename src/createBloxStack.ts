@@ -1,12 +1,9 @@
-import { BloxStack, BloxStackAdapter, BloxStackScopeAdapter, BloxStackScopeAdapters } from "./types";
+import { ArrayToRecord, BloxStack, BloxStackAdapter, BloxStackScopeAdapter, BloxStackScopeAdapters } from "./types";
 
 /**
  * Entry point function which returns a new BloxStack
  * @param props
  */
-type ArrayToRecord<T extends readonly BloxStackAdapter[]> = {
-	[P in T[number]["name"]]: Extract<T[number], { name: P }>;
-};
 
 export function createBloxStack<const T extends readonly BloxStackAdapter[]>(props: {
 	adapters: T;

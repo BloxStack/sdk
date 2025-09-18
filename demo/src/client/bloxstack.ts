@@ -1,6 +1,6 @@
 import { SharedBloxstack } from "shared/bloxstack";
-import startBloxStack, { Client, Server } from "../../../src/startBloxStack";
+import { startBloxStackClient } from "../../../src/startBloxStack";
 
-export const ClientBloxstack = startBloxStack<Client>(SharedBloxstack, {
+export const ClientBloxstack = startBloxStackClient(SharedBloxstack, {
 	clientOnlyOption: true,
 });

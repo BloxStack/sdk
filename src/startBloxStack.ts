@@ -1,8 +1,7 @@
 import { RunService } from "@rbxts/services";
-import { BloxStack, BloxStackAdapters } from "./types";
+import { ArrayToRecord, BloxStack, BloxStackAdapter, BloxStackAdapters } from "./types";
 
-export type Server = 0;
-export type Client = 1;
+export type Stack = "server" | "client";
 
 interface BloxStackStartClientOptions {
 	clientOnlyOption: any;
@@ -11,14 +10,20 @@ interface BloxStackStartServerOptions {
 	serverOnlyOption: any;
 }
 
-type BloxStackStartOptions<T extends Server | Client> = T extends Server
-	? BloxStackStartServerOptions
-	: BloxStackStartClientOptions;
-
-export default function startBloxStack<
-	S extends Server | Client, // Explicit or inferred type for options
-	T extends BloxStack<BloxStackAdapters> = BloxStack<BloxStackAdapters>, // T inferred from bloxstack
->(bloxstack: T, options: BloxStackStartOptions<S>): ReturnType<T>[S extends Server ? "server" : "client"] {
+export function startBloxStackClient<Adapters extends readonly BloxStackAdapter[]>(
+	bloxstack: BloxStack<ArrayToRecord<Adapters>>,
+	options: BloxStackStartClientOptions,
+): ReturnType<BloxStack<ArrayToRecord<Adapters>>>["client"] {
 	const isClient = RunService.IsClient();
-	return bloxstack()[isClient ? "client" : "server"];
+	if (!isClient) error("Attempted to start client stack on server");
+	return bloxstack()["client"];
+}
+
+export function startBloxStackServer<Adapters extends readonly BloxStackAdapter[]>(
+	bloxstack: BloxStack<ArrayToRecord<Adapters>>,
+	options: BloxStackStartServerOptions,
+): ReturnType<BloxStack<ArrayToRecord<Adapters>>>["server"] {
+	const isClient = RunService.IsClient();
+	if (isClient) error("Attempted to start server stack on client");
+	return bloxstack()["server"];
 }

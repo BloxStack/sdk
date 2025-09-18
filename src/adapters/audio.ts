@@ -19,7 +19,7 @@ export interface AudioAdapterConfig {
 }
 export function audioAdapter(config: AudioAdapterConfig): BloxStackAdapter<"Audio"> {
 	return {
-		name: "Audio" as const,
+		name: "Audio",
 		client: AudioAdapterClient,
 		server: AudioAdapterServer,
 	};
