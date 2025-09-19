@@ -1,25 +1,25 @@
 import { BloxStackAdapter, BloxStackScopeAdapter } from "../types";
 
-export class AudioAdapterClient extends BloxStackScopeAdapter {
-	public play(soundId: string) {
-		print(soundId);
+export class AudioAdapterClient<Sounds> extends BloxStackScopeAdapter {
+	public play(sound: Sounds) {
+		print(sound);
 	}
 }
-export class AudioAdapterServer extends BloxStackScopeAdapter {
-	public play(player: Player, soundId: string) {
-		print(soundId);
+export class AudioAdapterServer<Sounds> extends BloxStackScopeAdapter {
+	public play(player: Player, sound: Sounds) {
+		print(sound);
 	}
-	public playAll(soundId: string) {
-		print(soundId);
+	public playAll(sound: Sounds) {
+		print(sound);
 	}
 }
 
 export interface AudioAdapterConfig {
-	SoundEffects: Record<string, number>;
+	SoundEffects: { [key: string]: number };
 }
-export function audioAdapter(
-	config: AudioAdapterConfig,
-): BloxStackAdapter<"Audio", AudioAdapterClient, AudioAdapterServer> {
+export function audioAdapter<T extends Record<string, number>>(config: {
+	SoundEffects: T;
+}): BloxStackAdapter<"Audio", AudioAdapterClient<keyof T>, AudioAdapterServer<keyof T>> {
 	return {
 		name: "Audio",
 		client: AudioAdapterClient,
