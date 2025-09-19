@@ -4,10 +4,10 @@ import { ArrayToRecord, BloxStack, BloxStackAdapter, BloxStackAdapters } from ".
 export type Stack = "server" | "client";
 
 interface BloxStackStartClientOptions {
-	clientOnlyOption: any;
+	clientOnlyOption?: any;
 }
 interface BloxStackStartServerOptions {
-	serverOnlyOption: any;
+	serverOnlyOption?: any;
 }
 
 export function startBloxStackClient<Adapters extends readonly BloxStackAdapter[]>(

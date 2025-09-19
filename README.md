@@ -15,11 +15,7 @@ const SharedBloxstack = createBloxStack({
   ]
 })
 
-/* In client & server */
-return startBloxStackServer(SharedBloxstack, {
-  /* options */
-});
-export startBloxStackClient(SharedBloxstack, {
-  /* options */
-});
+/* In server */
+export const ServerBloxstack = startBloxStackServer(SharedBloxstack, {});
+
 ```
