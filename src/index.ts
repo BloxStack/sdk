@@ -4,3 +4,4 @@ export * from "./types";
 
 /* Adapters */
 export * from "./adapters/audio";
+export * from "./adapters/flamework";
