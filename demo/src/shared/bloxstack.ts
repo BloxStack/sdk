@@ -14,5 +14,3 @@ export const SharedBloxstack = createBloxStack({
 		}),
 	] as const,
 });
-
-SharedBloxstack().client.Audio.play("AAA");
