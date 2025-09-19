@@ -6,8 +6,8 @@ export interface BloxStackAdapter<
 	ServerType extends BloxStackScopeAdapter = BloxStackScopeAdapter,
 > {
 	name: Name;
-	client: new () => ClientType;
-	server: new () => ServerType;
+	client: () => ClientType;
+	server: () => ServerType;
 }
 
 export type BloxStack<Adapters extends BloxStackAdapters> = () => {

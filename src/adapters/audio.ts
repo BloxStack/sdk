@@ -19,10 +19,10 @@ export interface AudioAdapterConfig {
 }
 export function audioAdapter<T extends Record<string, number>>(config: {
 	SoundEffects: T;
-}): BloxStackAdapter<"Audio", AudioAdapterClient<keyof T>, AudioAdapterServer<keyof T>> {
+}): BloxStackAdapter<"audio", AudioAdapterClient<keyof T>, AudioAdapterServer<keyof T>> {
 	return {
-		name: "Audio",
-		client: AudioAdapterClient,
-		server: AudioAdapterServer,
+		name: "audio",
+		client: () => new AudioAdapterClient(),
+		server: () => new AudioAdapterServer(),
 	};
 }
