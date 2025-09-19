@@ -1,13 +1,18 @@
 export class BloxStackScopeAdapter {}
-export interface BloxStackAdapter<Name extends string = string> {
+
+export interface BloxStackAdapter<
+	Name extends string = string,
+	ClientType extends BloxStackScopeAdapter = BloxStackScopeAdapter,
+	ServerType extends BloxStackScopeAdapter = BloxStackScopeAdapter,
+> {
 	name: Name;
-	client: BloxStackScopeAdapter;
-	server: BloxStackScopeAdapter;
+	client: new () => ClientType;
+	server: new () => ServerType;
 }
 
 export type BloxStack<Adapters extends BloxStackAdapters> = () => {
-	client: { [K in keyof Adapters]: Adapters[K]["client"] };
-	server: { [K in keyof Adapters]: Adapters[K]["server"] };
+	client: { [K in keyof Adapters]: InstanceType<Adapters[K]["client"]> };
+	server: { [K in keyof Adapters]: InstanceType<Adapters[K]["server"]> };
 };
 
 export type BloxStackAdapters<AdapterNames extends string = string> = {

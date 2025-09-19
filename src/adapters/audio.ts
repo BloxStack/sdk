@@ -17,7 +17,9 @@ export class AudioAdapterServer extends BloxStackScopeAdapter {
 export interface AudioAdapterConfig {
 	SoundEffects: Record<string, number>;
 }
-export function audioAdapter(config: AudioAdapterConfig): BloxStackAdapter<"Audio"> {
+export function audioAdapter(
+	config: AudioAdapterConfig,
+): BloxStackAdapter<"Audio", AudioAdapterClient, AudioAdapterServer> {
 	return {
 		name: "Audio",
 		client: AudioAdapterClient,
