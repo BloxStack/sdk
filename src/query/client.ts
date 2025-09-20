@@ -129,6 +129,12 @@ export class QueryClient {
 		return entry?.data;
 	}
 
+	public getQueryError(key: QueryKey): unknown {
+		const ks = this.keyToString(key);
+		const entry = this.cache.get(ks);
+		return entry?.error;
+	}
+
 	public subscribe(key: QueryKey, cb: () => void): () => void {
 		const ks = this.keyToString(key);
 		const entry = this.ensureEntry(ks);

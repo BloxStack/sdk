@@ -65,9 +65,13 @@ export type ProceduresInTree<TTree extends RouterTree> = {
  * - queryOptions(input?, opts?): convenience builder for hooks
  * - fetch/mutate: non-React usage
  */
-export type ClientApiOfTree<TTree extends RouterTree> = {
-	[K in keyof TTree & string]: TTree[K] extends ProcedureDef<infer _C, infer I, infer O>
-		? {
+// Roblox-compatible client proxy that preserves router structure (like tRPC)
+export type BloxStackClientProxy<TRouter extends RouterRoot<any>> =
+	TRouter extends RouterRoot<infer TTree> ? ClientProxyOfTree<TTree> : never;
+
+type ClientProxyOfTree<TTree extends RouterTree> = {
+	[K in keyof TTree]: TTree[K] extends ProcedureDef<infer _C, infer I, infer O>
+		? TTree[K] & {
 				/** canonical path for this procedure, e.g. "player.getStats" */
 				pathKey(): string;
 				/** build a stable query key for caching */
@@ -83,9 +87,12 @@ export type ClientApiOfTree<TTree extends RouterTree> = {
 				mutate(input: I): Promise<O>;
 			}
 		: TTree[K] extends RouterTree
-			? ClientApiOfTree<TTree[K]>
+			? ClientProxyOfTree<TTree[K]>
 			: never;
 };
+
+// Legacy alias for compatibility
+export type ClientApiOfTree<TTree extends RouterTree> = ClientProxyOfTree<TTree>;
 
 export interface ServerInvalidationTarget {
 	scope: "all" | "player" | "players";

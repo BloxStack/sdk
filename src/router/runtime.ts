@@ -2,7 +2,7 @@ import { RunService } from "@rbxts/services";
 import { createClient } from "./client";
 import { registerServerRouter } from "./server";
 import { RouterClientTransport, RouterServerTransport } from "./transport";
-import { InvalidateMessage, RouterRoot, RouterTree, ServerInvalidationTarget } from "./types";
+import { InvalidateMessage, RouterRoot, RouterTree, ServerInvalidationTarget, BloxStackClientProxy } from "./types";
 import { QueryClient } from "../query/client";
 import { createPaths } from "./paths";
 import type { PathHelpersOfTree } from "./paths";
@@ -23,9 +23,9 @@ export interface CreateRouterRuntimeOptions<Context> {
  * - On the client, returns `{ api, paths, dispose }` and optionally wires invalidations to the provided QueryClient.
  * - On the server, returns `{ paths, invalidate }` for invalidating path keys or specific query keys.
  */
-export interface ClientRouterRuntime<TTree extends RouterTree> {
-	api: ClientApiOfTree<TTree>;
-	paths: PathHelpersOfTree<TTree>;
+export interface ClientRouterRuntime<TRouter extends RouterRoot<any>> {
+	api: BloxStackClientProxy<TRouter>;
+	paths: PathHelpersOfTree<TRouter extends RouterRoot<infer T> ? T : never>;
 	dispose: () => void;
 }
 
@@ -34,10 +34,10 @@ export interface ServerRouterRuntime<TTree extends RouterTree> {
 	paths: PathHelpersOfTree<TTree>;
 }
 
-export function createBloxStackRouter<TRouterTree extends RouterTree, Context>(
-	root: RouterRoot<TRouterTree>,
+export function createBloxStackRouter<TRouter extends RouterRoot<any>, Context>(
+	root: TRouter,
 	options: CreateRouterRuntimeOptions<Context>,
-): ClientRouterRuntime<TRouterTree> | ServerRouterRuntime<TRouterTree> {
+): ClientRouterRuntime<TRouter> | ServerRouterRuntime<TRouter extends RouterRoot<infer T> ? T : never> {
 	const isClient = RunService.IsClient();
 	if (isClient) {
 		const { api, dispose } = createClient(
@@ -46,27 +46,29 @@ export function createBloxStackRouter<TRouterTree extends RouterTree, Context>(
 			options.queryClient,
 		);
 		const paths = createPaths(root.__type);
-		return { api, paths, dispose } as ClientRouterRuntime<TRouterTree>;
+		return { api: api as BloxStackClientProxy<TRouter>, paths, dispose } as ClientRouterRuntime<TRouter>;
 	}
 	const server = registerServerRouter(root.__type, options.transport as RouterServerTransport, {
 		createContext: options.createContext,
 	});
 	const paths = createPaths(root.__type);
-	return { invalidate: server.invalidate, paths } as ServerRouterRuntime<TRouterTree>;
+	return { invalidate: server.invalidate, paths } as ServerRouterRuntime<
+		TRouter extends RouterRoot<infer T> ? T : never
+	>;
 }
 
 /** Narrow a runtime to the client shape with a runtime check for safety. */
-export function expectClientRuntime<TRouterTree extends RouterTree>(
-	runtime: ClientRouterRuntime<TRouterTree> | ServerRouterRuntime<TRouterTree>,
-): ClientRouterRuntime<TRouterTree> {
+export function expectClientRuntime<TRouter extends RouterRoot<any>>(
+	runtime: ClientRouterRuntime<TRouter> | ServerRouterRuntime<TRouter extends RouterRoot<infer T> ? T : never>,
+): ClientRouterRuntime<TRouter> {
 	if (!RunService.IsClient()) error("Expected client runtime");
-	return runtime as ClientRouterRuntime<TRouterTree>;
+	return runtime as ClientRouterRuntime<TRouter>;
 }
 
 /** Narrow a runtime to the server shape with a runtime check for safety. */
-export function expectServerRuntime<TRouterTree extends RouterTree>(
-	runtime: ClientRouterRuntime<TRouterTree> | ServerRouterRuntime<TRouterTree>,
-): ServerRouterRuntime<TRouterTree> {
+export function expectServerRuntime<TRouter extends RouterRoot<any>>(
+	runtime: ClientRouterRuntime<TRouter> | ServerRouterRuntime<TRouter extends RouterRoot<infer T> ? T : never>,
+): ServerRouterRuntime<TRouter extends RouterRoot<infer T> ? T : never> {
 	if (RunService.IsClient()) error("Expected server runtime");
-	return runtime as ServerRouterRuntime<TRouterTree>;
+	return runtime as ServerRouterRuntime<TRouter extends RouterRoot<infer T> ? T : never>;
 }

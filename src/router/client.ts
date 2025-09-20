@@ -7,8 +7,36 @@ function stableKey(value: unknown): unknown {
 	return value;
 }
 
+// Create a Lua-compatible proxy that preserves original objects (tRPC-style)
+function createProcedureProxy(original: any, pathKey: string, transport: RouterClientTransport): any {
+	// Create a new table that inherits from the original
+	const proxy = {} as any;
+
+	// Copy all original properties to preserve symbol references
+	for (const [key, value] of pairs(original as Record<string, unknown>)) {
+		proxy[key] = value;
+	}
+
+	// Add client methods
+	proxy.pathKey = () => pathKey;
+	proxy.queryKey = (input?: unknown) =>
+		[pathKey, input !== undefined ? stableKey(input) : undefined] as [string, unknown?];
+	proxy.queryOptions = <I = unknown, O = unknown>(input?: I, opts?: { enabled?: boolean; staleSeconds?: number }) => {
+		const key = [pathKey, input !== undefined ? stableKey(input) : undefined] as [string, unknown?];
+		const fetch = () => transport.request<O>(pathKey, input as unknown);
+		return { key, fetch, enabled: opts?.enabled, staleSeconds: opts?.staleSeconds };
+	};
+	proxy.fetch = async <I = unknown, O = unknown>(input: I) => transport.request<O>(pathKey, input as unknown);
+	proxy.mutate = async <I = unknown, O = unknown>(input: I) => transport.request<O>(pathKey, input as unknown);
+
+	// Set the original as the metatable to preserve symbol identity
+	setmetatable(proxy, { __index: original });
+
+	return proxy;
+}
+
 /**
- * Build a strongly-typed client API from the router tree, attaching helpers to each procedure.
+ * Build a strongly-typed client API from the router tree, preserving original structure (tRPC-style).
  */
 function buildClientApi<TTree extends RouterTree>(
 	root: TTree,
@@ -25,25 +53,8 @@ function buildClientApi<TTree extends RouterTree>(
 			(v as { kind?: unknown; handler?: unknown }).kind !== undefined &&
 			(v as { kind?: unknown; handler?: unknown }).handler !== undefined
 		) {
-			api[name] = {
-				pathKey() {
-					return nextPath;
-				},
-				queryKey(input?: unknown) {
-					return [nextPath, input !== undefined ? stableKey(input) : undefined] as [string, unknown?];
-				},
-				queryOptions<I = unknown, O = unknown>(input?: I, opts?: { enabled?: boolean; staleSeconds?: number }) {
-					const key = [nextPath, input !== undefined ? stableKey(input) : undefined] as [string, unknown?];
-					const fetch = () => transport.request<O>(nextPath, input as unknown);
-					return { key, fetch, enabled: opts?.enabled, staleSeconds: opts?.staleSeconds };
-				},
-				async fetch<I = unknown, O = unknown>(input: I) {
-					return transport.request<O>(nextPath, input as unknown);
-				},
-				async mutate<I = unknown, O = unknown>(input: I) {
-					return transport.request<O>(nextPath, input as unknown);
-				},
-			};
+			// Create a proxy that preserves the original procedure
+			api[name] = createProcedureProxy(v, nextPath, transport);
 		} else if (typeOf(v) === "table") {
 			api[name] = buildClientApi(v as RouterTree, transport, nextPath);
 		}
