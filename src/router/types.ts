@@ -2,8 +2,25 @@
 
 export type Awaitable<T> = T | Promise<T>;
 
-// Lightweight validator compatible with @rbxts/t's `t.check<T>` without importing it
+// Import t for proper type extraction
+import { t } from "@rbxts/t";
+
+// Lightweight validator compatible with @rbxts/t's `t.check<T>`
 export type RuntimeCheck<T> = (value: unknown) => value is T;
+
+// Extract the TypeScript type from a t.check validator
+export type InferCheckType<T> = T extends RuntimeCheck<infer U> ? U : never;
+
+// Convert union types with undefined to optional properties (like tRPC does with Zod)
+export type OptionalizeUndefined<T> = {
+	// Required properties: don't include undefined in the union
+	[K in keyof T as undefined extends T[K] ? never : K]: T[K];
+} & {
+	// Optional properties: include undefined in the union, make optional, extract non-undefined type
+	[K in keyof T as undefined extends T[K] ? K : never]?: T[K] extends infer U | undefined
+		? Exclude<U, undefined>
+		: never;
+};
 
 export type ProcedureKind = "query" | "mutation";
 

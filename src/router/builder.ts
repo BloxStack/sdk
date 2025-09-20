@@ -1,4 +1,13 @@
-import { ProcedureDef, ProcedureHandler, RuntimeCheck, RouterRoot, RouterTree } from "./types";
+import {
+	ProcedureDef,
+	ProcedureHandler,
+	RuntimeCheck,
+	RouterRoot,
+	RouterTree,
+	InferCheckType,
+	OptionalizeUndefined,
+} from "./types";
+import { t } from "@rbxts/t";
 
 // A chainable procedure builder capturing validators and middleware, without binding to transport.
 
@@ -13,8 +22,10 @@ export interface ProcedureBuilder<Context, Input, Output> {
 	use<NextContext>(
 		mw: (ctx: Context) => NextContext | Promise<NextContext>,
 	): ProcedureBuilder<NextContext, Input, Output>;
-	input<I2>(check: RuntimeCheck<I2>): ProcedureBuilder<Context, I2, Output>;
-	output<O2>(check: RuntimeCheck<O2>): ProcedureBuilder<Context, Input, O2>;
+	input<TCheck extends RuntimeCheck<any>>(
+		check: TCheck,
+	): ProcedureBuilder<Context, OptionalizeUndefined<t.static<TCheck>>, Output>;
+	output<TCheck extends RuntimeCheck<any>>(check: TCheck): ProcedureBuilder<Context, Input, t.static<TCheck>>;
 	/**
 	 * Finalize as a query. If no `.output(...)` was provided, `Output` will be inferred
 	 * from this handler's return type.
@@ -38,13 +49,13 @@ export function createProcedure<Context>(): ProcedureBuilder<Context, unknown, u
 				middlewares.push(mw as any);
 				return withState<NC, I, O>();
 			},
-			input<I2>(check: RuntimeCheck<I2>) {
+			input<TCheck extends RuntimeCheck<any>>(check: TCheck) {
 				inputCheck = check as any;
-				return withState<C, I2, O>();
+				return withState<C, OptionalizeUndefined<t.static<TCheck>>, O>();
 			},
-			output<O2>(check: RuntimeCheck<O2>) {
+			output<TCheck extends RuntimeCheck<any>>(check: TCheck) {
 				outputCheck = check as any;
-				return withState<C, I, O2>();
+				return withState<C, I, t.static<TCheck>>();
 			},
 			query<O2>(handler: ProcedureHandler<C, I, O2>) {
 				return {
