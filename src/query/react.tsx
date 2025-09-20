@@ -1,30 +1,30 @@
-import React from "@rbxts/react";
+import React, { createContext, useContext, useState, useEffect, useReducer } from "@rbxts/react";
 import { QueryClient, QueryKey, FetchQueryOptions } from "./client";
 
-const QueryClientContext = React.createContext<QueryClient | undefined>(undefined);
+// Create context with a default QueryClient to avoid undefined issues
+const defaultQueryClient = new QueryClient();
+const QueryClientContext = createContext<QueryClient>(defaultQueryClient);
 
 export function QueryClientProvider(props: { client: QueryClient; children: React.ReactNode }) {
-	return React.createElement(QueryClientContext.Provider, { value: props.client }, props.children);
+	return <QueryClientContext.Provider value={props.client}>{props.children}</QueryClientContext.Provider>;
 }
 
 export function useQueryClient(): QueryClient {
-	const ctx = React.useContext(QueryClientContext);
-	if (!ctx) throw "Missing QueryClientProvider";
-	return ctx;
+	return useContext(QueryClientContext);
 }
 
 export function useQuery<T>(options: FetchQueryOptions<T>) {
 	const client = useQueryClient();
-	const [data, setData] = React.useState<T | undefined>(client.getQueryData<T>(options.key));
-	const [status, setStatus] = React.useState<"idle" | "loading" | "success" | "error">("idle");
-	const [queryError, setQueryError] = React.useState<unknown>(client.getQueryError(options.key));
-	const [, force] = React.useReducer(
+	const [data, setData] = useState<T | undefined>(client.getQueryData<T>(options.key));
+	const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+	const [queryError, setQueryError] = useState<unknown>(client.getQueryError(options.key));
+	const [, force] = useReducer(
 		(s: number) => s + 1,
 		0,
-		(x) => x,
+		(x: number) => x,
 	);
 
-	React.useEffect(() => {
+	useEffect(() => {
 		const unsubscribe = client.subscribe(options.key, () => {
 			setData(client.getQueryData<T>(options.key));
 			setQueryError(client.getQueryError(options.key));
@@ -33,7 +33,7 @@ export function useQuery<T>(options: FetchQueryOptions<T>) {
 		return unsubscribe;
 	}, [client, options.key[0]]);
 
-	React.useEffect(() => {
+	useEffect(() => {
 		setStatus("loading");
 		client
 			.fetchQuery(options)
@@ -51,12 +51,12 @@ export function useQuery<T>(options: FetchQueryOptions<T>) {
 	const isLoading = status === "loading";
 	const isError = status === "error";
 	const isSuccess = status === "success";
-	return { data, status, isLoading, isError, isSuccess, error: queryError } as const;
+	return { data, status, isLoading, isError, isSuccess, queryError } as const;
 }
 
 export function useMutation<TInput, TOutput>(mutateFn: (input: TInput) => Promise<TOutput>) {
-	const [status, setStatus] = React.useState<"idle" | "loading" | "success" | "error">("idle");
-	const [err, setErr] = React.useState<unknown>(undefined);
+	const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+	const [queryError, setQueryError] = useState<unknown>(undefined);
 	async function mutate(input: TInput): Promise<TOutput> {
 		setStatus("loading");
 		try {
@@ -64,10 +64,10 @@ export function useMutation<TInput, TOutput>(mutateFn: (input: TInput) => Promis
 			setStatus("success");
 			return out;
 		} catch (e) {
-			setErr(e);
+			setQueryError(e);
 			setStatus("error");
 			throw e;
 		}
 	}
-	return { mutate, status, err } as const;
+	return { mutate, status, queryError } as const;
 }
