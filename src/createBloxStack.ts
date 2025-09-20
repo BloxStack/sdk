@@ -14,8 +14,8 @@ export function createBloxStack<const T extends readonly BloxStackAdapter[]>(pro
 
 	for (const adapter of props.adapters) {
 		const name = adapter.name as keyof typeof clientAdapters;
-		clientAdapters[name] = adapter.client() as any;
-		serverAdapters[name] = adapter.server() as any;
+		clientAdapters[name] = adapter.client as any;
+		serverAdapters[name] = adapter.server as any;
 	}
 
 	return () => ({
