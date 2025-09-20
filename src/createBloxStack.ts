@@ -9,8 +9,8 @@ export function createBloxStack<const T extends readonly BloxStackAdapter[]>(pro
 	adapters: T;
 	debugMode?: boolean;
 }): BloxStack<ArrayToRecord<T>> {
-	const clientAdapters = {} as { [K in T[number]["name"]]: InstanceType<T[number]["client"]> };
-	const serverAdapters = {} as { [K in T[number]["name"]]: InstanceType<T[number]["server"]> };
+	const clientAdapters = {} as { [K in T[number]["name"]]: ReturnType<T[number]["client"]> };
+	const serverAdapters = {} as { [K in T[number]["name"]]: ReturnType<T[number]["server"]> };
 
 	for (const adapter of props.adapters) {
 		const name = adapter.name as keyof typeof clientAdapters;
