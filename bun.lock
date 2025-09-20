@@ -24,6 +24,10 @@
         "roblox-ts": "^3.0.0",
         "typescript": "^5.8.3",
       },
+      "peerDependencies": {
+        "@flamework/networking": "^1.3.1",
+        "@rbxts/react": "^17.2.3",
+      },
     },
   },
   "packages": {
@@ -46,6 +50,8 @@
     "@eslint/plugin-kit": ["@eslint/plugin-kit@0.3.5", "", { "dependencies": { "@eslint/core": "^0.15.2", "levn": "^0.4.1" } }, "sha512-Z5kJ+wU3oA7MMIqVR9tyZRtjYPr4OC004Q4Rw7pgOKUOKkJfZ3O24nz3WYfGRpMDNmcOi3TwQOmgm7B7Tpii0w=="],
 
     "@flamework/core": ["@flamework/core@1.3.2", "", { "dependencies": { "@rbxts/maid": "^1.0.0-ts.1", "@rbxts/object-utils": "^1.0.4", "@rbxts/services": "^1.1.4", "@rbxts/signal": "^1.0.3", "@rbxts/t": "^3.2.1" } }, "sha512-4/tY5plivbvr4vvwRtxzuym7Nl5eDHM3RAR2nZHuuNz31h2S2CIrCoGHjkod0I6qPpfs4eUw2TiIrvVN8iC8JQ=="],
+
+    "@flamework/networking": ["@flamework/networking@1.3.2", "", { "dependencies": { "@rbxts/object-utils": "^1.0.4", "@rbxts/services": "^1.1.5", "@rbxts/signal": "^1.0.3", "@rbxts/t": "^3.1.0" }, "peerDependencies": { "@flamework/core": "*" } }, "sha512-ImIOe3PDiUjYZBElZOWCDtPmDXwxG0z8syerKRYWHkTWHc9cchRdh6213xoguRDRhmZZ0MVJsIVZ/pCiNq5IYg=="],
 
     "@humanfs/core": ["@humanfs/core@0.19.1", "", {}, "sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA=="],
 
@@ -70,6 +76,10 @@
     "@rbxts/maid": ["@rbxts/maid@1.1.0", "", {}, "sha512-bVWXZ0p2M3OJzPzvN5fY0T4s37ezUMY7EX31Xspp7Ds4C/K9yE4MHMRXjtlNvsYVPmoc5tdhAbpZY02Veix5lg=="],
 
     "@rbxts/object-utils": ["@rbxts/object-utils@1.0.4", "", {}, "sha512-dLLhf022ipV+9i910sOE7kl9losKHoon0WgeerHqVMQA5EYsLUsVT2AxhJuhk8MiDn5oJ2GiFofE/LadY9TpJQ=="],
+
+    "@rbxts/react": ["@rbxts/react@17.2.3", "", { "dependencies": { "@rbxts/react-vendor": "17.2.3" } }, "sha512-IoOB8e2W8MxT0MKWFf0Ls0vT61ImYL6ctHQgz5+oazma6z8bqFtJjgPxOuy6jmMSuyfBe7rYp/muou0kIjZT+Q=="],
+
+    "@rbxts/react-vendor": ["@rbxts/react-vendor@17.2.3", "", {}, "sha512-dWCiVelvTK6h920geaFH/OQ5zoWHyhyqyfH51hKx2/iVZ6OiiyNVJ5UqEIkJMG4HsJ8JnkTORizV3+MtQ41BtA=="],
 
     "@rbxts/services": ["@rbxts/services@1.5.5", "", {}, "sha512-Hu7QH2ecefS60zpakKG3T2vgABydoOJqpSG7nXr59wFAbPk/cA+OcsntYPHUWyHAat0VFGZ5jNZLTLdiqfssvg=="],
 
