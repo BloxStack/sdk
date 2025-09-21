@@ -11,8 +11,8 @@ export interface BloxStackAdapter<
 }
 
 export type BloxStack<Adapters extends BloxStackAdapters> = () => {
-	client: { [K in keyof Adapters]: ReturnType<Adapters[K]["client"]> };
-	server: { [K in keyof Adapters]: ReturnType<Adapters[K]["server"]> };
+	client: { [K in keyof Adapters]: ReturnType<Adapters[K]["client"]> } & { init: () => void };
+	server: { [K in keyof Adapters]: ReturnType<Adapters[K]["server"]> } & { init: () => void };
 };
 
 export type BloxStackAdapters<AdapterNames extends string = string> = {

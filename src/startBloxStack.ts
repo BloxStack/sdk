@@ -10,30 +10,36 @@ interface BloxStackStartServerOptions {
 	serverOnlyOption?: any;
 }
 
-export function startBloxStackClient<Adapters extends readonly BloxStackAdapter[]>(
+export function bloxStackClient<Adapters extends readonly BloxStackAdapter[]>(
 	bloxstack: BloxStack<ArrayToRecord<Adapters>>,
 	options: BloxStackStartClientOptions,
 ): ReturnType<BloxStack<ArrayToRecord<Adapters>>>["client"] {
 	const isClient = RunService.IsClient();
 	if (!isClient) error("Attempted to start client stack on server");
 
-	const adapters: Record<string, any> = {};
-	for (const [name, adapter] of pairs(bloxstack()["client"])) {
-		adapters[name as string] = (adapter as () => void)();
-	}
+	const adapters: Record<string, any> = {
+		init: () => {
+			for (const [name, adapter] of pairs(bloxstack()["client"])) {
+				adapters[name as string] = (adapter as () => void)();
+			}
+		},
+	};
 	return adapters as ReturnType<BloxStack<ArrayToRecord<Adapters>>>["client"];
 }
 
-export function startBloxStackServer<Adapters extends readonly BloxStackAdapter[]>(
+export function bloxStackServer<Adapters extends readonly BloxStackAdapter[]>(
 	bloxstack: BloxStack<ArrayToRecord<Adapters>>,
 	options: BloxStackStartServerOptions,
 ): ReturnType<BloxStack<ArrayToRecord<Adapters>>>["server"] {
 	const isClient = RunService.IsClient();
 	if (isClient) error("Attempted to start server stack on client");
 
-	const adapters: Record<string, any> = {};
-	for (const [name, adapter] of pairs(bloxstack()["server"])) {
-		adapters[name as string] = (adapter as () => void)();
-	}
+	const adapters: Record<string, any> = {
+		init: () => {
+			for (const [name, adapter] of pairs(bloxstack()["server"])) {
+				adapters[name as string] = (adapter as () => void)();
+			}
+		},
+	};
 	return adapters as ReturnType<BloxStack<ArrayToRecord<Adapters>>>["server"];
 }

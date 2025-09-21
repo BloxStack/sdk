@@ -18,8 +18,9 @@ export function createBloxStack<const T extends readonly BloxStackAdapter[]>(pro
 		serverAdapters[name] = adapter.server as any;
 	}
 
-	return () => ({
-		client: clientAdapters,
-		server: serverAdapters,
-	});
+	return () =>
+		({
+			client: clientAdapters,
+			server: serverAdapters,
+		}) as ReturnType<BloxStack<ArrayToRecord<T>>>;
 }

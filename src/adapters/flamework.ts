@@ -28,6 +28,7 @@ export function flameworkAdapter<A extends string, B extends string>(
 			return new BloxStackScopeAdapter();
 		},
 		server: () => {
+			print(Global);
 			if (!Global.required) {
 				Flamework.addPaths(config.ServerPath, metaB as never);
 				Flamework.ignite();
