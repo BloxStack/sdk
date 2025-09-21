@@ -1,8 +1,6 @@
 import { Flamework, Modding } from "@flamework/core";
 import { BloxStackAdapter, BloxStackScopeAdapter } from "../types";
 
-const Global = _G as { required: boolean };
-
 /**
  * @metadata macro {@link _addPaths intrinsic-flamework-rewrite}
  */
@@ -18,23 +16,14 @@ export function flameworkAdapter<A extends string, B extends string>(
 		name: "flamework",
 
 		client: () => {
-			if (!Global.required) {
-				Flamework.addPaths(config.ClientPath, metaA as never);
-				Flamework.ignite();
-
-				Global.required = true;
-			}
+			Flamework.addPaths(config.ClientPath, metaA as never);
+			Flamework.ignite();
 
 			return new BloxStackScopeAdapter();
 		},
 		server: () => {
-			print(Global);
-			if (!Global.required) {
-				Flamework.addPaths(config.ServerPath, metaB as never);
-				Flamework.ignite();
-
-				Global.required = true;
-			}
+			Flamework.addPaths(config.ServerPath, metaB as never);
+			Flamework.ignite();
 
 			return new BloxStackScopeAdapter();
 		},
