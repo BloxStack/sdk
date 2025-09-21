@@ -1,8 +1,10 @@
 import { Flamework, Modding } from "@flamework/core";
 import { BloxStackAdapter, BloxStackScopeAdapter } from "../types";
 
+const Global = _G as { required: boolean };
+
 /**
- * @metadata macro intrinsic-arg-shift {@link _addPaths intrinsic-flamework-rewrite}
+ * @metadata macro {@link _addPaths intrinsic-flamework-rewrite}
  */
 export function flameworkAdapter<A extends string, B extends string>(
 	config: {
@@ -14,18 +16,24 @@ export function flameworkAdapter<A extends string, B extends string>(
 ): BloxStackAdapter<"flamework", BloxStackScopeAdapter, BloxStackScopeAdapter> {
 	return {
 		name: "flamework",
+
 		client: () => {
-			Flamework.addPaths(
-				config.ClientPath,
-				metaA as never,
-			); /* metaA and config being pushed down is a weird flamework macro byproduct i assume. */
-			Flamework.ignite();
+			if (!Global.required) {
+				Flamework.addPaths(config.ClientPath, metaA as never);
+				Flamework.ignite();
+
+				Global.required = true;
+			}
 
 			return new BloxStackScopeAdapter();
 		},
 		server: () => {
-			Flamework.addPaths(config.ServerPath, config as never);
-			Flamework.ignite();
+			if (!Global.required) {
+				Flamework.addPaths(config.ServerPath, metaB as never);
+				Flamework.ignite();
+
+				Global.required = true;
+			}
 
 			return new BloxStackScopeAdapter();
 		},

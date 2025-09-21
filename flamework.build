@@ -5,8 +5,6 @@
 		"@bloxstack/sdk:out/types@BloxStackScopeAdapter": "@bloxstack/sdk:types@BloxStackScopeAdapter",
 		"@bloxstack/sdk:out/adapters/audio@AudioAdapterClient": "@bloxstack/sdk:adapters/audio@AudioAdapterClient",
 		"@bloxstack/sdk:out/adapters/audio@AudioAdapterServer": "@bloxstack/sdk:adapters/audio@AudioAdapterServer",
-		"@bloxstack/sdk:out/adapters/flamework@FlameworkAdapterClient": "@bloxstack/sdk:adapters/flamework@FlameworkAdapterClient",
-		"@bloxstack/sdk:out/adapters/flamework@FlameworkAdapterServer": "@bloxstack/sdk:adapters/flamework@FlameworkAdapterServer",
 		"@bloxstack/sdk:out/query/client@QueryClient": "@bloxstack/sdk:query/client@QueryClient"
 	},
 	"metadata": {},
