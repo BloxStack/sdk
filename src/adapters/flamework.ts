@@ -8,8 +8,8 @@ const Global = _G as { required: boolean };
  */
 export function flameworkAdapter<A extends string, B extends string>(
 	config: {
-		ServerPath: A;
-		ClientPath: B;
+		ClientPath: A;
+		ServerPath: B;
 	},
 	metaA?: Modding.Intrinsic<"path", [A]>,
 	metaB?: Modding.Intrinsic<"path", [B]>,
